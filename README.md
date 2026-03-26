@@ -6,21 +6,11 @@
 <title>Medela Supermercado</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f5f5f5;
-}
-
-/* TELAS */
+body{ margin:0; font-family:Arial; background:#f5f5f5; }
 .tela{ display:none; }
 .ativa{ display:block; }
 
-/* LOGIN */
-.login{
-  text-align:center;
-  padding:40px;
-}
+.login{ text-align:center; padding:40px; }
 
 input{
   width:90%;
@@ -39,14 +29,12 @@ button{
   width:90%;
 }
 
-/* HEADER */
 .header{
   background:#e53935;
   color:white;
   padding:20px;
 }
 
-/* PRODUTOS */
 .produtos{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -67,19 +55,6 @@ button{
   object-fit:cover;
 }
 
-/* CARRINHO */
-.carrinho{
-  padding:10px;
-}
-
-.item{
-  background:white;
-  margin:5px;
-  padding:10px;
-  border-radius:8px;
-}
-
-/* NAV */
 .nav{
   position:fixed;
   bottom:0;
@@ -96,7 +71,7 @@ button{
 <body>
 
 <!-- LOGIN -->
-<div id="login" class="tela ativa login">
+<div id="login" class="tela login">
   <h2>🛒 Medela</h2>
   <input id="cpf" placeholder="CPF">
   <input id="senha" type="password" placeholder="Senha">
@@ -106,29 +81,13 @@ button{
 <!-- HOME -->
 <div id="home" class="tela">
   <div class="header">
-    <h3>Bem-vindo 👋</h3>
+    <h3 id="userNome">Bem-vindo 👋</h3>
   </div>
 
   <div class="produtos" id="produtos"></div>
 
   <div class="nav">
     <div onclick="ir('home')">🏠</div>
-    <div onclick="ir('carrinho')">🛒</div>
-    <div onclick="sair()">🚪</div>
-  </div>
-</div>
-
-<!-- CARRINHO -->
-<div id="carrinho" class="tela carrinho">
-  <h3>🛒 Carrinho</h3>
-  <div id="lista"></div>
-  <h2 id="total"></h2>
-
-  <button onclick="finalizar()">Finalizar Pedido</button>
-
-  <div class="nav">
-    <div onclick="ir('home')">🏠</div>
-    <div onclick="ir('carrinho')">🛒</div>
     <div onclick="sair()">🚪</div>
   </div>
 </div>
@@ -136,24 +95,36 @@ button{
 <script>
 let produtos = [
   {nome:"Carne", preco:30, img:"https://i.imgur.com/7yUvePI.png"},
-  {nome:"Frango", preco:12, img:"https://i.imgur.com/2nCt3Sbl.jpg"},
-  {nome:"Arroz", preco:20, img:"https://i.imgur.com/Mq7FZ5M.png"},
-  {nome:"Refrigerante", preco:8, img:"https://i.imgur.com/Y4R1b7N.png"}
+  {nome:"Frango", preco:12, img:"https://i.imgur.com/2nCt3Sbl.jpg"}
 ];
 
-let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+/* VERIFICAR LOGIN AO ABRIR */
+window.onload = function(){
+  let user = localStorage.getItem("user");
+
+  if(user){
+    ir("home");
+    document.getElementById("userNome").innerText = "Olá, " + user;
+  }else{
+    ir("login");
+  }
+};
 
 /* LOGIN */
 function entrar(){
-  let cpf = document.getElementById("cpf").value;
-  let senha = document.getElementById("senha").value;
+  let cpf = document.getElementById("cpf").value.trim();
+  let senha = document.getElementById("senha").value.trim();
 
-  if(cpf && senha){
-    localStorage.setItem("user", cpf);
-    ir("home");
-  }else{
-    alert("Preencha tudo");
+  if(cpf === "" || senha === ""){
+    alert("Preencha CPF e senha!");
+    return;
   }
+
+  localStorage.setItem("user", cpf);
+
+  document.getElementById("userNome").innerText = "Olá, " + cpf;
+
+  ir("home");
 }
 
 /* TROCAR TELA */
@@ -162,7 +133,6 @@ function ir(tela){
   document.getElementById(tela).classList.add("ativa");
 
   if(tela=="home") carregarProdutos();
-  if(tela=="carrinho") carregarCarrinho();
 }
 
 /* PRODUTOS */
@@ -170,58 +140,15 @@ function carregarProdutos(){
   let div = document.getElementById("produtos");
   div.innerHTML="";
 
-  produtos.forEach((p,i)=>{
+  produtos.forEach(p=>{
     div.innerHTML += `
       <div class="produto">
         <img src="${p.img}">
         <p>${p.nome}</p>
         <b>R$ ${p.preco}</b>
-        <button onclick="add(${i})">Comprar</button>
       </div>
     `;
   });
-}
-
-/* ADD CARRINHO */
-function add(i){
-  carrinho.push(produtos[i]);
-  localStorage.setItem("carrinho", JSON.stringify(carrinho));
-  alert("Adicionado!");
-}
-
-/* CARRINHO */
-function carregarCarrinho(){
-  let div = document.getElementById("lista");
-  let total = 0;
-  div.innerHTML="";
-
-  carrinho.forEach((p,i)=>{
-    total += p.preco;
-
-    div.innerHTML += `
-      <div class="item">
-        ${p.nome} - R$ ${p.preco}
-        <button onclick="remover(${i})">❌</button>
-      </div>
-    `;
-  });
-
-  document.getElementById("total").innerText = "Total: R$ " + total;
-}
-
-/* REMOVER */
-function remover(i){
-  carrinho.splice(i,1);
-  localStorage.setItem("carrinho", JSON.stringify(carrinho));
-  carregarCarrinho();
-}
-
-/* FINALIZAR */
-function finalizar(){
-  alert("Pedido enviado 🚚");
-  carrinho = [];
-  localStorage.removeItem("carrinho");
-  ir("home");
 }
 
 /* SAIR */
