@@ -1,196 +1,160 @@
-<!MEDELA SUPERMERCADO>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medela Supermercado</title>
+<title>Medela Sistema Master</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0a0a0a;
-  color: white;
-}
-
-/* TOPO */
-header {
-  background: #b30000;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  margin: 0;
-}
-
-header input {
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-}
-
-/* BANNER */
-.banner {
-  background: linear-gradient(45deg,#b30000,#000);
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-/* PRODUTOS */
-.produtos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-  gap: 15px;
-  padding: 15px;
-}
-
-.produto {
-  background: #1a1a1a;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 0 10px #b30000;
-}
-
-.produto img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.produto button {
-  background: #b30000;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* CARRINHO */
-.carrinho {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #b30000;
-  padding: 10px;
-}
-
-.item-carrinho {
-  display: flex;
-  justify-content: space-between;
-  margin: 5px 0;
-}
-
-.remover {
-  background: black;
-  color: red;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
+body{background:#0a0a0a;color:white;font-family:Arial;text-align:center}
+header{background:#b30000;padding:15px;font-size:22px}
+.box{background:#1a1a1a;margin:20px;padding:20px;border-radius:10px}
+button{background:#b30000;color:white;padding:8px;border:none;border-radius:6px}
+input{padding:8px;margin:5px;border-radius:6px;border:none}
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🛒 Medela Supermercado</h1>
-  <input placeholder="Buscar produto...">
-</header>
+<header>🛒 MEDELA MASTER</header>
 
-<div class="banner">
-  🔥 Promoções Medela
+<div class="box">
+<h3>Login</h3>
+<input id="email" placeholder="Email">
+<input id="senha" type="password" placeholder="Senha"><br>
+<button onclick="registrar()">Registrar</button>
+<button onclick="login()">Entrar</button>
 </div>
 
-<div class="produtos">
+<div id="app" style="display:none">
 
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c">
-    <h3>Arroz 5kg</h3>
-    <p>R$ 25</p>
-    <button onclick="add('Arroz',25)">Adicionar</button>
-  </div>
-
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1585238342028-4c6a7c64c6d2">
-    <h3>Feijão</h3>
-    <p>R$ 8</p>
-    <button onclick="add('Feijão',8)">Adicionar</button>
-  </div>
-
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1604908177522-432d3a1fa90b">
-    <h3>Leite</h3>
-    <p>R$ 5</p>
-    <button onclick="add('Leite',5)">Adicionar</button>
-  </div>
-
+<!-- ADMIN -->
+<div class="box">
+<h3>Admin - Produtos</h3>
+<input id="nomeProd" placeholder="Nome">
+<input id="precoProd" placeholder="Preço">
+<button onclick="addProduto()">Adicionar</button>
 </div>
 
-<div class="carrinho">
-  <h3>🛒 Carrinho</h3>
-  <div id="lista"></div>
-  <p>Total: R$ <span id="total">0</span></p>
-  <button onclick="comprar()">Finalizar no WhatsApp</button>
+<!-- PRODUTOS -->
+<div class="box">
+<h3>Produtos</h3>
+<div id="produtos"></div>
+</div>
+
+<!-- CARRINHO -->
+<div class="box">
+<h3>Carrinho</h3>
+<div id="carrinho"></div>
+<p>Total: R$ <span id="total">0</span></p>
+<button onclick="finalizar()">Finalizar Pedido</button>
+</div>
+
 </div>
 
 <script>
+// 🔥 COLE SUA CONFIG AQUI
+const firebaseConfig = {
+  apiKey: "COLE_AQUI",
+  authDomain: "COLE_AQUI",
+  projectId: "COLE_AQUI"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 let carrinho = [];
-let total = 0;
 
-function add(nome, preco){
-  carrinho.push({nome, preco});
-  atualizar();
+// LOGIN
+function registrar(){
+  auth.createUserWithEmailAndPassword(email.value, senha.value);
 }
 
-function remover(index){
-  total -= carrinho[index].preco;
-  carrinho.splice(index,1);
-  atualizar();
+function login(){
+  auth.signInWithEmailAndPassword(email.value, senha.value);
 }
 
-function atualizar(){
-  let lista = document.getElementById("lista");
-  lista.innerHTML = "";
-  total = 0;
+// USUÁRIO
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("app").style.display="block";
+    carregarProdutos();
+  }
+});
 
-  carrinho.forEach((item,index)=>{
-    total += item.preco;
+// PRODUTOS
+function addProduto(){
+  db.collection("produtos").add({
+    nome: nomeProd.value,
+    preco: Number(precoProd.value)
+  });
+}
 
-    let div = document.createElement("div");
-    div.className = "item-carrinho";
+function deletarProduto(id){
+  db.collection("produtos").doc(id).delete();
+}
 
-    div.innerHTML = `
-      ${item.nome} - R$${item.preco}
-      <button class="remover" onclick="remover(${index})">X</button>
+function carregarProdutos(){
+  db.collection("produtos").onSnapshot(snap=>{
+    let div = document.getElementById("produtos");
+    div.innerHTML="";
+
+    snap.forEach(doc=>{
+      let p = doc.data();
+
+      div.innerHTML += `
+        <p>${p.nome} - R$${p.preco}
+        <button onclick="addCarrinho('${p.nome}',${p.preco})">+</button>
+        <button onclick="deletarProduto('${doc.id}')">X</button>
+        </p>
+      `;
+    });
+  });
+}
+
+// CARRINHO
+function addCarrinho(nome,preco){
+  carrinho.push({nome,preco});
+  atualizarCarrinho();
+}
+
+function atualizarCarrinho(){
+  let div = document.getElementById("carrinho");
+  div.innerHTML="";
+  let total=0;
+
+  carrinho.forEach((i,index)=>{
+    total+=i.preco;
+
+    div.innerHTML += `
+      ${i.nome} - R$${i.preco}
+      <button onclick="remover(${index})">X</button><br>
     `;
-
-    lista.appendChild(div);
   });
 
-  document.getElementById("total").innerText = total;
+  document.getElementById("total").innerText=total;
 }
 
-function comprar(){
-  let msg = "Pedido Medela:%0A";
+function remover(i){
+  carrinho.splice(i,1);
+  atualizarCarrinho();
+}
 
-  carrinho.forEach(item=>{
-    msg += `${item.nome} - R$${item.preco}%0A`;
+// PEDIDO
+function finalizar(){
+  db.collection("pedidos").add({
+    itens: carrinho,
+    total: carrinho.reduce((t,i)=>t+i.preco,0),
+    data: new Date()
   });
 
-  msg += `Total: R$${total}`;
-
-  window.open("https://wa.me/5521999999999?text=" + msg);
+  alert("Pedido enviado!");
+  carrinho=[];
+  atualizarCarrinho();
 }
 </script>
 
