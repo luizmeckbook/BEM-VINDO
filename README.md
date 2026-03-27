@@ -27,11 +27,11 @@
 
         /* HOME E CARRINHO */
         .header-app { background: linear-gradient(135deg, var(--orange-main), #ff8c42); padding: 40px 20px; color: white; border-radius: 0 0 25px 25px; }
-        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px; padding-bottom: 120px; }
+        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px; padding-bottom: 150px; }
         .item-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .item-card img { width: 60px; height: 60px; margin-bottom: 10px; object-fit: contain; }
         
-        .cart-container { padding: 20px; margin-bottom: 180px; }
+        .cart-container { padding: 20px; margin-bottom: 200px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; background: #fff; margin-bottom: 5px; border-radius: 8px; }
         
         /* PAGAMENTO */
@@ -50,7 +50,7 @@
     <section id="screen-login" class="app-screen active">
         <div class="container">
             <div class="logo-area"><h1>Medela<span> Supermercado</span></h1><p>Acesse sua conta</p></div>
-            <div class="input-group"><label>CPF ou E-mail</label><input type="text" id="login-id" placeholder="Digite aqui"></div>
+            <div class="input-group"><label>CPF ou E-mail (Gmail)</label><input type="text" id="login-id" placeholder="Digite seu CPF ou Gmail"></div>
             <div class="input-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
             <button class="btn-green" onclick="executarLogin()">Entrar</button>
             <p style="text-align:center; color: var(--primary-green); font-weight:bold; cursor:pointer; margin-top:25px;" onclick="irPara('screen-register')">Novo por aqui? Cadastre-se</p>
@@ -59,15 +59,15 @@
 
     <section id="screen-register" class="app-screen">
         <div class="container">
-            <h2 style="color:var(--primary-green)">Cadastro</h2>
-            <div class="input-group"><label>CPF</label><input type="text" id="reg-cpf" oninput="mascaraCPF(this)" placeholder="000.000.000-00"></div>
-            <div class="input-group"><label>Nome Completo</label><input type="text" id="reg-nome"></div>
-            <div class="input-group"><label>Data Nascimento</label><input type="date" id="reg-nascimento"></div>
-            <div class="input-group"><label>E-mail</label><input type="email" id="reg-email"></div>
-            <div class="input-group"><label>Endereço de Entrega</label><input type="text" id="reg-endereco" placeholder="Rua, Número, Bairro"></div>
-            <div class="input-group"><label>Senha</label><input type="password" id="reg-senha"></div>
-            <button class="btn-green" onclick="finalizarCadastro()">Criar Conta</button>
-            <p style="text-align:center; cursor:pointer;" onclick="irPara('screen-login')">Voltar</p>
+            <h2 style="color:var(--primary-green)">Criar Conta</h2>
+            <div class="input-group"><label>* Nome Completo</label><input type="text" id="reg-nome" placeholder="Seu nome"></div>
+            <div class="input-group"><label>* CPF</label><input type="text" id="reg-cpf" oninput="mascaraCPF(this)" placeholder="000.000.000-00"></div>
+            <div class="input-group"><label>* Telefone</label><input type="text" id="reg-tel" placeholder="(00) 00000-0000"></div>
+            <div class="input-group"><label>* Gmail</label><input type="email" id="reg-email" placeholder="seuemail@gmail.com"></div>
+            <div class="input-group"><label>* Endereço de Entrega</label><input type="text" id="reg-endereco" placeholder="Rua, Número, Bairro"></div>
+            <div class="input-group"><label>* Senha</label><input type="password" id="reg-senha" placeholder="Crie uma senha"></div>
+            <button class="btn-green" onclick="finalizarCadastro()">Concluir Cadastro</button>
+            <p style="text-align:center; cursor:pointer; font-size: 14px; margin-top: 15px;" onclick="irPara('screen-login')">Voltar ao Login</p>
         </div>
     </section>
 
@@ -82,7 +82,7 @@
     </section>
 
     <section id="screen-cart" class="app-screen">
-        <header class="header-app"><h2>Meu Pedido</h2></header>
+        <header class="header-app"><h2>Carrinho</h2></header>
         <div class="cart-container">
             <div id="cart-list"></div>
             
@@ -97,21 +97,22 @@
                     </select>
                 </div>
                 <div id="troco-box" class="input-group">
-                    <label>PRECISA DE TROCO PARA QUANTO?</label>
-                    <input type="text" id="troco-valor" placeholder="Ex: 100,00">
+                    <label>TROCO PARA QUANTO?</label>
+                    <input type="text" id="troco-valor" placeholder="Ex: 50,00">
                 </div>
-                <p style="font-size: 12px; color: #666;">Taxa de Entrega: <strong>R$ 5,00</strong></p>
+                <p style="font-size: 13px; color: #444; margin-top: 10px;">Taxa de Entrega: <strong>R$ 5,00</strong></p>
+                <p style="font-size: 11px; color: #888;">Entregar em: <br><span id="display-address" style="color:var(--orange-main)"></span></p>
             </div>
         </div>
         
         <div class="container" style="position: fixed; bottom: 70px; background: white; width: 100%; max-width: 450px; border-top: 2px solid var(--primary-green);">
-            <p style="font-size: 18px;"><strong>Total com Entrega: R$ <span id="cart-total">0,00</span></strong></p>
-            <button class="btn-green" onclick="enviarPedido()">Enviar Pedido no WhatsApp</button>
+            <p style="font-size: 18px; margin: 10px 0;"><strong>Total: R$ <span id="cart-total">0,00</span></strong></p>
+            <button class="btn-green" onclick="enviarPedido()">✅ Finalizar Pedido no WhatsApp</button>
         </div>
     </section>
 
     <nav class="bottom-nav">
-        <button class="nav-item nav-active" onclick="irPara('screen-home')">LOJA</button>
+        <button class="nav-item nav-active" onclick="irPara('screen-home')">PRODUTOS</button>
         <button class="nav-item" onclick="irPara('screen-cart')">CARRINHO <span id="cart-count" class="badge">0</span></button>
         <button class="nav-item" onclick="location.reload()">SAIR</button>
     </nav>
@@ -124,6 +125,9 @@
         function irPara(id) {
             document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            if(id === 'screen-cart' && usuarioLogado) {
+                document.getElementById('display-address').innerText = usuarioLogado.endereco;
+            }
         }
 
         function mascaraCPF(i) {
@@ -140,28 +144,40 @@
         }
 
         function finalizarCadastro() {
-            const dados = {
-                cpf: document.getElementById('reg-cpf').value,
-                nome: document.getElementById('reg-nome').value,
-                endereco: document.getElementById('reg-endereco').value,
-                email: document.getElementById('reg-email').value,
-                senha: document.getElementById('reg-senha').value
-            };
-            localStorage.setItem(dados.cpf, JSON.stringify(dados));
-            localStorage.setItem(dados.email, JSON.stringify(dados));
-            alert("Cadastro realizado!");
+            const nome = document.getElementById('reg-nome').value;
+            const cpf = document.getElementById('reg-cpf').value;
+            const tel = document.getElementById('reg-tel').value;
+            const email = document.getElementById('reg-email').value.toLowerCase();
+            const endereco = document.getElementById('reg-endereco').value;
+            const senha = document.getElementById('reg-senha').value;
+
+            if(!nome || !cpf || !email || !senha) {
+                alert("Preencha os campos obrigatórios!");
+                return;
+            }
+
+            const dados = { nome, cpf, tel, email, endereco, senha };
+            
+            // Salva por CPF e por Email para permitir login duplo
+            localStorage.setItem(cpf, JSON.stringify(dados));
+            localStorage.setItem(email, JSON.stringify(dados));
+            
+            alert("Cadastro concluído com sucesso!");
             irPara('screen-login');
         }
 
         function executarLogin() {
-            const id = document.getElementById('login-id').value;
+            const id = document.getElementById('login-id').value.toLowerCase();
             const senha = document.getElementById('login-pass').value;
             const user = JSON.parse(localStorage.getItem(id));
+
             if (user && user.senha === senha) {
                 usuarioLogado = user;
                 document.getElementById('user-display').innerText = "Olá, " + user.nome.split(' ')[0];
                 irPara('screen-home');
-            } else { alert("Login ou Senha incorretos!"); }
+            } else { 
+                alert("Dados de acesso incorretos!"); 
+            }
         }
 
         function addAoCarrinho(nome, preco) {
@@ -197,17 +213,18 @@
         }
 
         function enviarPedido() {
-            if (carrinho.length === 0) { alert("Adicione produtos primeiro!"); return; }
+            if (carrinho.length === 0) { alert("Seu carrinho está vazio!"); return; }
 
             const formaPagamento = document.getElementById('pay-method').value;
             const troco = document.getElementById('troco-valor').value;
 
             let texto = `*NOVO PEDIDO - MEDELA SUPERMERCADO*\n\n`;
-            texto += `*Cliente:* ${usuarioLogado.nome}\n`;
+            texto += `*CLIENTE:* ${usuarioLogado.nome}\n`;
+            texto += `*TEL:* ${usuarioLogado.tel}\n`;
             texto += `*CPF:* ${usuarioLogado.cpf}\n`;
-            texto += `*Endereço:* ${usuarioLogado.endereco}\n`;
+            texto += `*ENDEREÇO:* ${usuarioLogado.endereco}\n`;
             texto += `----------------------------\n`;
-            texto += `*ITENS DO PEDIDO:*\n`;
+            texto += `*PRODUTOS:*\n`;
             
             carrinho.forEach(item => {
                 texto += `• ${item.nome}: R$ ${item.preco.toFixed(2)}\n`;
@@ -215,13 +232,14 @@
 
             texto += `----------------------------\n`;
             texto += `*Taxa de Entrega:* R$ 5,00\n`;
-            texto += `*TOTAL GERAL:* R$ ${document.getElementById('cart-total').innerText}\n`;
+            texto += `*TOTAL DO PEDIDO:* R$ ${document.getElementById('cart-total').innerText}\n`;
             texto += `*FORMA DE PAGAMENTO:* ${formaPagamento}\n`;
             
             if(formaPagamento === 'Dinheiro' && troco) {
                 texto += `*Levar troco para:* R$ ${troco}\n`;
             }
 
+            // Seu número: 21977126638
             const url = `https://api.whatsapp.com/send?phone=5521977126638&text=${encodeURIComponent(texto)}`;
             window.open(url, '_blank');
         }
