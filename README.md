@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+MEDELA SUPERMERCADO
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -109,8 +109,8 @@
 </nav>
 
 <script>
-    const SENHA_MESTRA = "123";
-    const CATEGORIAS = ["Mercearia", "Açougue", "Hortifrúti", "Bebidas", "Limpeza", "Padaria", "Fiambreria"];
+    const SENHA_MESTRA = "Medela7690";
+    const CATEGORIAS = ["Mercearia", "Açougue", "Hortifrúti", "Bebida s", "Limpeza", "Padaria", "Fiambreria"];
     
     let estoque = JSON.parse(localStorage.getItem('medela_estoque_v3')) || [];
     let carrinho = [];
