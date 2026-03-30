@@ -3,161 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medela Supermercado Pro</title>
+<title>Medela Supermercado - Seguro</title>
 <style>
-:root { --primary: #e53935; --bg: #f5f5f5; --white: #ffffff; --admin: #2c3e50; }
-body { margin:0; font-family: 'Segoe UI', Arial; background: var(--bg); color: #333; }
-.tela { display:none; min-height: 100vh; }
-.ativa { display:block; }
+    :root { --primary: #e53935; --bg: #f5f5f5; --white: #ffffff; --green: #2ecc71; }
+    body { margin:0; font-family: 'Segoe UI', Arial; background: var(--bg); }
+    .tela { display:none; min-height: 100vh; }
+    .ativa { display:block; }
 
-/* UI Elements */
-input, select { width:90%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ddd; box-sizing: border-box; }
-button { background: var(--primary); color:white; border:none; padding:12px; border-radius:8px; width:90%; cursor:pointer; font-weight:bold; }
-button.secondary { background: #555; margin-top: 5px; }
-.header { background: var(--primary); color:white; padding:15px; display:flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 10; }
+    /* Forms */
+    .login-container { text-align:center; padding:50px 20px; max-width: 400px; margin: auto; }
+    input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ddd; box-sizing: border-box; }
+    button { background: var(--primary); color:white; border:none; padding:12px; border-radius:8px; width:100%; cursor:pointer; font-weight:bold; }
+    .link { color: #e53935; text-decoration: underline; cursor: pointer; display: block; margin-top: 15px; }
 
-/* Grid de Produtos */
-.container { padding: 15px; margin-bottom: 80px; }
-.produtos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-.card { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+    /* Header e Loja */
+    .header { background: var(--primary); color:white; padding:15px; display:flex; justify-content: space-between; align-items: center; }
+    .container { padding: 15px; margin-bottom: 80px; }
+    .produtos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
 
-/* Carrinho Estilo Modal */
-#carrinho-modal { position: fixed; bottom: 0; background: white; width: 100%; height: 70%; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 100; transform: translateY(100%); transition: 0.3s; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-#carrinho-modal.aberto { transform: translateY(0); }
-.item-carrinho { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
-.btn-remove { background: #ff5252; width: auto; padding: 5px 10px; font-size: 12px; }
-
-/* Floating Buttons */
-.float-btn { position:fixed; width:60px; height:60px; border-radius:50%; font-size:24px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 50; }
-#btn-carrinho { bottom:20px; right:20px; background: #2ecc71; }
-#btn-chat { bottom:90px; right:20px; background: #3498db; }
-.badge { position: absolute; top: -5px; right: -5px; background: white; color: black; font-size: 12px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+    /* Carrinho */
+    #carrinho-modal { position: fixed; bottom: 0; background: white; width: 100%; height: 70%; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 100; transform: translateY(100%); transition: 0.3s; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+    #carrinho-modal.aberto { transform: translateY(0); }
+    .item-carrinho { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+    
+    .badge { background: white; color: var(--primary); padding: 2px 6px; border-radius: 50%; font-size: 12px; margin-left: 5px; }
 </style>
 </head>
 <body>
 
 <div id="login" class="tela ativa">
-  <div style="text-align:center; padding:50px 20px;">
-    <h2>🛒 Medela</h2>
-    <input id="cpfLogin" placeholder="CPF (admin para painel)">
-    <input id="senhaLogin" type="password" placeholder="Senha">
-    <button onclick="entrar()">Entrar</button>
-  </div>
+    <div class="login-container">
+        <h2>🛒 Medela Login</h2>
+        <input id="cpfLogin" placeholder="Seu CPF">
+        <input id="senhaLogin" type="password" placeholder="Sua Senha">
+        <button onclick="entrar()">Entrar</button>
+        <span class="link" onclick="ir('cadastro')">Não tem conta? Cadastre-se</span>
+    </div>
+</div>
+
+<div id="cadastro" class="tela">
+    <div class="login-container">
+        <h2>Criar Conta Única</h2>
+        <p>Use seu CPF como identificador único.</p>
+        <input id="cpfCad" placeholder="Digite seu CPF">
+        <input id="senhaCad" type="password" placeholder="Crie uma senha forte">
+        <button onclick="cadastrar()">Finalizar Cadastro</button>
+        <span class="link" onclick="ir('login')">Já tenho conta</span>
+    </div>
 </div>
 
 <div id="home" class="tela">
-  <div class="header">
-    <span id="userNome">Olá</span>
-    <button style="width:auto; background:rgba(0,0,0,0.2)" onclick="sair()">Sair</button>
-  </div>
-  
-  <div class="container">
-    <h3 style="margin-bottom:5px;">Nossos Produtos</h3>
-    <div class="produtos-grid" id="listaProdutos"></div>
-  </div>
-
-  <button id="btn-chat" class="float-btn" onclick="alert('Abrindo Chat...')">💬</button>
-  <button id="btn-carrinho" class="float-btn" onclick="toggleCarrinho()">
-    🛒 <span class="badge" id="carrinhoCount">0</span>
-  </button>
+    <div class="header">
+        <span id="userNome">Olá</span>
+        <button style="width:auto; background:rgba(0,0,0,0.2)" onclick="sair()">Sair</button>
+    </div>
+    <div class="container">
+        <h3>Produtos</h3>
+        <div class="produtos-grid" id="listaProdutos"></div>
+    </div>
+    
+    <button onclick="toggleCarrinho()" style="position:fixed; bottom:20px; right:20px; width:70px; height:70px; border-radius:50%; background:var(--green); font-size:24px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        🛒<span id="cartCount" class="badge">0</span>
+    </button>
 </div>
 
 <div id="carrinho-modal">
-  <div style="display:flex; justify-content: space-between; align-items: center;">
-    <h2>Seu Carrinho</h2>
-    <button style="width:auto; background:none; color:black; font-size:24px" onclick="toggleCarrinho()">✕</button>
-  </div>
-  <div id="itensCarrinho">
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+        <h2>Carrinho</h2>
+        <button style="width:auto; background:none; color:black; font-size:24px" onclick="toggleCarrinho()">✕</button>
     </div>
-  <div style="margin-top:20px; border-top: 2px solid #eee; padding-top:10px;">
-    <h3>Total: R$ <span id="totalCarrinho">0.00</span></h3>
-    <button onclick="alert('Pedido finalizado!')" style="background:#2ecc71">Finalizar Compra</button>
-  </div>
+    <div id="itensCarrinho"></div>
+    <div style="margin-top:20px; border-top: 2px solid #eee; padding-top:10px;">
+        <h3>Total: R$ <span id="totalCarrinho">0.00</span></h3>
+        <button onclick="finalizarCompra()" style="background:var(--green)">Enviar para WhatsApp</button>
+    </div>
 </div>
 
 <script>
-let produtosLoja = JSON.parse(localStorage.getItem("produtos")) || [
-  {id: 1, nome: "Maçã Gala", preco: 5.90},
-  {id: 2, nome: "Coca-Cola 2L", preco: 8.50},
-  {id: 3, nome: "Pão de Forma", preco: 6.30}
+// --- BANCO DE DADOS LOCAL ---
+let produtos = [
+    {id: 1, nome: "Arroz 5kg", preco: 25.90},
+    {id: 2, nome: "Feijão Preto", preco: 7.50},
+    {id: 3, nome: "Óleo de Soja", preco: 6.80},
+    {id: 4, nome: "Leite Integral", preco: 4.90}
 ];
 
 let carrinho = [];
 
+// --- FUNÇÕES DE USUÁRIO (A SENHA ÚNICA) ---
+function cadastrar() {
+    let cpf = document.getElementById("cpfCad").value.trim();
+    let senha = document.getElementById("senhaCad").value.trim();
+
+    if(cpf.length < 3 || senha.length < 3) {
+        alert("Preencha os campos corretamente!");
+        return;
+    }
+
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+    // VERIFICA SE O USUÁRIO JÁ EXISTE
+    if(usuarios[cpf]) {
+        alert("Erro: Este CPF já está cadastrado no sistema.");
+        return;
+    }
+
+    // SALVA O NOVO USUÁRIO
+    usuarios[cpf] = senha;
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    alert("Cadastro realizado com sucesso! Agora faça login.");
+    ir('login');
+}
+
 function entrar() {
-  let cpf = document.getElementById("cpfLogin").value;
-  localStorage.setItem("logado", cpf);
-  document.getElementById("userNome").innerText = "Olá, " + cpf;
-  renderizarProdutos();
-  ir("home");
+    let cpf = document.getElementById("cpfLogin").value.trim();
+    let senha = document.getElementById("senhaLogin").value.trim();
+    
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+    // VALIDAÇÃO DA SENHA ÚNICA
+    if(usuarios[cpf] && usuarios[cpf] === senha) {
+        localStorage.setItem("usuarioLogado", cpf);
+        document.getElementById("userNome").innerText = "Olá, " + cpf;
+        renderizarProdutos();
+        ir('home');
+    } else {
+        alert("CPF ou Senha incorretos!");
+    }
 }
 
-function ir(tela) {
-  document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
-  document.getElementById(tela).classList.add("ativa");
-}
-
-function renderizarProdutos() {
-  const grid = document.getElementById("listaProdutos");
-  grid.innerHTML = produtosLoja.map(p => `
-    <div class="card">
-      <div style="font-size:30px">📦</div>
-      <strong>${p.nome}</strong><br>
-      <span style="color:green">R$ ${p.preco.toFixed(2)}</span>
-      <button onclick="addAoCarrinho(${p.id})" style="margin-top:8px; background:#2ecc71">Adicionar</button>
-    </div>
-  `).join('');
-}
-
-/* LÓGICA DO CARRINHO */
+// --- FUNÇÕES DO CARRINHO ---
 function addAoCarrinho(id) {
-  const produto = produtosLoja.find(p => p.id === id);
-  carrinho.push(produto);
-  atualizarCarrinhoUI();
+    let p = produtos.find(item => item.id === id);
+    carrinho.push(p);
+    atualizarUI();
 }
 
-function removerDoCarrinho(index) {
-  carrinho.splice(index, 1);
-  atualizarCarrinhoUI();
+function atualizarUI() {
+    document.getElementById("cartCount").innerText = carrinho.length;
+    let lista = document.getElementById("itensCarrinho");
+    let total = 0;
+    
+    lista.innerHTML = carrinho.map((item, index) => {
+        total += item.preco;
+        return `<div class="item-carrinho">
+            <span>${item.nome} - R$ ${item.preco.toFixed(2)}</span>
+            <button onclick="removerItem(${index})" style="width:auto; padding:5px; background:red">X</button>
+        </div>`;
+    }).join('');
+    
+    document.getElementById("totalCarrinho").innerText = total.toFixed(2);
 }
 
-function atualizarCarrinhoUI() {
-  // Atualiza Contador
-  document.getElementById("carrinhoCount").innerText = carrinho.length;
-  
-  // Atualiza Lista
-  const lista = document.getElementById("itensCarrinho");
-  if(carrinho.length === 0) {
-    lista.innerHTML = "<p>Seu carrinho está vazio.</p>";
-  } else {
-    lista.innerHTML = carrinho.map((item, index) => `
-      <div class="item-carrinho">
-        <div>
-          <strong>${item.nome}</strong><br>
-          <small>R$ ${item.preco.toFixed(2)}</small>
-        </div>
-        <button class="btn-remove" onclick="removerDoCarrinho(${index})">Remover</button>
-      </div>
-    `).join('');
-  }
+function removerItem(index) {
+    carrinho.splice(index, 1);
+    atualizarUI();
+}
 
-  // Atualiza Total
-  const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
-  document.getElementById("totalCarrinho").innerText = total.toFixed(2);
+function finalizarCompra() {
+    if(carrinho.length === 0) return alert("Carrinho vazio!");
+    let texto = "Olá, gostaria de pedir: \n" + carrinho.map(i => "- " + i.nome).join("\n");
+    window.open(`https://wa.me/5521999999999?text=${encodeURIComponent(texto)}`);
+}
+
+// --- UTILITÁRIOS ---
+function ir(tela) {
+    document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
+    document.getElementById(tela).classList.add("ativa");
 }
 
 function toggleCarrinho() {
-  document.getElementById("carrinho-modal").classList.toggle("aberto");
+    document.getElementById("carrinho-modal").classList.toggle("aberto");
+}
+
+function renderizarProdutos() {
+    document.getElementById("listaProdutos").innerHTML = produtos.map(p => `
+        <div class="card">
+            <strong>${p.nome}</strong><br>
+            R$ ${p.preco.toFixed(2)}<br>
+            <button onclick="addAoCarrinho(${p.id})" style="margin-top:10px; background:var(--green)">Adicionar</button>
+        </div>
+    `).join('');
 }
 
 function sair() {
-  localStorage.removeItem("logado");
-  location.reload();
+    localStorage.removeItem("usuarioLogado");
+    location.reload();
 }
 
-// Início
 window.onload = () => {
-  if(localStorage.getItem("logado")) entrar();
+    let logado = localStorage.getItem("usuarioLogado");
+    if(logado) {
+        document.getElementById("userNome").innerText = "Olá, " + logado;
+        renderizarProdutos();
+        ir('home');
+    }
 };
 </script>
 </body>
