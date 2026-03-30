@@ -2,97 +2,37 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Açougue Medela</title>
+<title>Login - Medela</title>
 
 <style>
-body { font-family: Arial; margin: 0; background: #f5f5f5; }
-
-header {
-  background: #b30000;
-  color: white;
-  padding: 15px;
-  font-size: 20px;
-}
-
-.container { padding: 15px; }
-
-.produto {
+body { font-family: Arial; background: #f5f5f5; }
+.box {
+  max-width: 300px;
+  margin: 100px auto;
   background: white;
-  margin: 10px 0;
-  padding: 15px;
+  padding: 20px;
   border-radius: 10px;
 }
-
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
 button {
   background: #b30000;
   color: white;
   border: none;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-input {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-}
-
-/* CHAT */
-#chatBox {
-  background: #e5ddd5;
-  height: 300px;
-  overflow-y: auto;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.msg {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 10px;
-  max-width: 70%;
-}
-
-.cliente {
-  background: #dcf8c6;
-  margin-left: auto;
-  text-align: right;
-}
-
-.admin {
-  background: white;
 }
 </style>
-
 </head>
 <body>
 
-<header>🥩 Açougue Medela</header>
-
-<div class="container">
-
+<div class="box">
 <h2>Login</h2>
+
 <input id="cpf" placeholder="CPF">
 <input id="senha" type="password" placeholder="Senha">
 <button onclick="login()">Entrar</button>
-
-<hr>
-
-<h2>Produtos</h2>
-<div id="produtos"></div>
-
-<h2>Carrinho</h2>
-<div id="carrinho"></div>
-<p id="total"></p>
-<button onclick="finalizar()">Finalizar Pedido</button>
-
-<h2>Status do Pedido</h2>
-<p id="status"></p>
-
-<h2>Chat</h2>
-<div id="chatBox"></div>
-<input id="msg" placeholder="Mensagem">
-<button onclick="enviarMensagem()">Enviar</button>
 
 </div>
 
@@ -101,15 +41,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore,
   collection,
-  getDocs,
-  addDoc,
   query,
   where,
-  onSnapshot,
-  orderBy
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 🔥 CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "SUA_KEY",
   authDomain: "SEU_DOMINIO",
@@ -119,7 +55,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// LOGIN
 window.login = async () => {
   const cpf = document.getElementById("cpf").value;
   const senha = document.getElementById("senha").value;
@@ -136,16 +71,118 @@ window.login = async () => {
     alert("Login inválido");
   } else {
     localStorage.setItem("cpf", cpf);
-    alert("Logado!");
-    carregarProdutos();
-    ouvirPedidos();
-    iniciarChat();
+    window.location.href = "index.html";
   }
 };
+</script>
 
-// CARRINHO
-let carrinho = [];
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Açougue Medela</title>
+
+<style>
+body { font-family: Arial; margin: 0; background: #f5f5f5; }
+
+header {
+  background: #b30000;
+  color: white;
+  padding: 15px;
+}
+
+.container { padding: 15px; }
+
+.produto {
+  background: white;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+button {
+  background: #b30000;
+  color: white;
+  padding: 10px;
+  border: none;
+}
+
+#chatBox {
+  background: #e5ddd5;
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.msg { padding: 10px; margin: 5px; }
+
+.cliente { background: #dcf8c6; text-align: right; }
+
+.admin { background: white; }
+</style>
+
+</head>
+<body>
+
+<header>🥩 Açougue Medela</header>
+
+<div class="container">
+
+<button onclick="sair()">Sair</button>
+
+<h2>Produtos</h2>
+<div id="produtos"></div>
+
+<h2>Carrinho</h2>
+<div id="carrinho"></div>
+<p id="total"></p>
+<button onclick="finalizar()">Finalizar Pedido</button>
+
+<h2>Status</h2>
+<p id="status"></p>
+
+<h2>Chat</h2>
+<div id="chatBox"></div>
+<input id="msg" placeholder="Mensagem">
+<button onclick="enviarMensagem()">Enviar</button>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  onSnapshot,
+  query,
+  where,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_KEY",
+  authDomain: "SEU_DOMINIO",
+  projectId: "SEU_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔐 PROTEÇÃO
 const cpf = localStorage.getItem("cpf");
+if (!cpf) window.location.href = "login.html";
+
+window.sair = () => {
+  localStorage.removeItem("cpf");
+  window.location.href = "login.html";
+};
+
+// 🛒 CARRINHO
+let carrinho = [];
 
 window.add = (nome, preco) => {
   carrinho.push({ nome, preco });
@@ -153,8 +190,8 @@ window.add = (nome, preco) => {
 };
 
 function render() {
-  let html = "";
   let total = 0;
+  let html = "";
 
   carrinho.forEach(p => {
     total += p.preco;
@@ -165,7 +202,7 @@ function render() {
   document.getElementById("total").innerText = "Total: R$" + total;
 }
 
-// PRODUTOS
+// 📦 PRODUTOS
 async function carregarProdutos() {
   const snap = await getDocs(collection(db, "produtos"));
   let html = "";
@@ -183,10 +220,8 @@ async function carregarProdutos() {
   document.getElementById("produtos").innerHTML = html;
 }
 
-// PEDIDO
+// 🧾 PEDIDO
 window.finalizar = async () => {
-  const cpf = localStorage.getItem("cpf");
-
   await addDoc(collection(db, "pedidos"), {
     cpf,
     carrinho,
@@ -196,23 +231,19 @@ window.finalizar = async () => {
   alert("Pedido feito!");
 };
 
-function ouvirPedidos() {
-  const cpf = localStorage.getItem("cpf");
-
-  onSnapshot(collection(db, "pedidos"), snap => {
-    snap.forEach(doc => {
-      let d = doc.data();
-      if (d.cpf === cpf) {
-        document.getElementById("status").innerText = d.status;
-      }
-    });
+// 📡 STATUS
+onSnapshot(collection(db, "pedidos"), snap => {
+  snap.forEach(doc => {
+    let d = doc.data();
+    if (d.cpf === cpf) {
+      document.getElementById("status").innerText = d.status;
+    }
   });
-}
+});
 
-// CHAT
+// 💬 CHAT
 window.enviarMensagem = async () => {
   const texto = document.getElementById("msg").value;
-  const cpf = localStorage.getItem("cpf");
 
   if (!texto) return;
 
@@ -226,40 +257,32 @@ window.enviarMensagem = async () => {
   document.getElementById("msg").value = "";
 };
 
-function iniciarChat() {
-  const cpf = localStorage.getItem("cpf");
+const q = query(
+  collection(db, "chats"),
+  where("cpf", "==", cpf),
+  orderBy("data")
+);
 
-  const q = query(
-    collection(db, "chats"),
-    where("cpf", "==", cpf),
-    orderBy("data")
-  );
+onSnapshot(q, snap => {
+  let html = "";
 
-  onSnapshot(q, snap => {
-    let html = "";
+  snap.forEach(doc => {
+    let m = doc.data();
 
-    snap.forEach(doc => {
-      let msg = doc.data();
-
-      if (msg.tipo === "cliente") {
-        html += `<div class="msg cliente">${msg.mensagem}</div>`;
-      } else {
-        html += `<div class="msg admin">${msg.mensagem}</div>`;
-      }
-    });
-
-    const chatBox = document.getElementById("chatBox");
-    chatBox.innerHTML = html;
-    chatBox.scrollTop = chatBox.scrollHeight;
+    if (m.tipo === "cliente") {
+      html += `<div class="msg cliente">${m.mensagem}</div>`;
+    } else {
+      html += `<div class="msg admin">${m.mensagem}</div>`;
+    }
   });
-}
 
-// AUTO LOGIN
-if (cpf) {
-  carregarProdutos();
-  ouvirPedidos();
-  iniciarChat();
-}
+  const box = document.getElementById("chatBox");
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+});
+
+// START
+carregarProdutos();
 </script>
 
 </body>
