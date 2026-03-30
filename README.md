@@ -57,7 +57,6 @@ button{
 <!-- CADASTRO -->
 <div id="cadastro" class="tela login">
   <h2>Cadastrar</h2>
-  <input id="nomeCad" placeholder="Nome completo">
   <input id="cpfCad" placeholder="CPF">
   <input id="senhaCad" type="password" placeholder="Senha">
   <button onclick="cadastrar()">Cadastrar</button>
@@ -80,10 +79,10 @@ button{
 
 /* AO ABRIR */
 window.onload = function(){
-  let logado = JSON.parse(localStorage.getItem("logado"));
+  let logado = localStorage.getItem("logado");
 
   if(logado){
-    document.getElementById("userNome").innerText = "Olá, " + logado.nome;
+    document.getElementById("userNome").innerText = "Olá, " + logado;
     ir("home");
   }else{
     ir("login");
@@ -98,11 +97,10 @@ function ir(tela){
 
 /* CADASTRAR */
 function cadastrar(){
-  let nome = document.getElementById("nomeCad").value.trim();
   let cpf = document.getElementById("cpfCad").value.trim();
   let senha = document.getElementById("senhaCad").value.trim();
 
-  if(nome=="" || cpf=="" || senha==""){
+  if(cpf=="" || senha==""){
     alert("Preencha tudo!");
     return;
   }
@@ -114,7 +112,7 @@ function cadastrar(){
     return;
   }
 
-  usuarios[cpf] = { nome: nome, senha: senha };
+  usuarios[cpf] = senha;
 
   localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
@@ -122,7 +120,7 @@ function cadastrar(){
   ir("login");
 }
 
-/* LOGIN */
+/* LOGIN REAL */
 function entrar(){
   let cpf = document.getElementById("cpfLogin").value.trim();
   let senha = document.getElementById("senhaLogin").value.trim();
@@ -134,17 +132,14 @@ function entrar(){
     return;
   }
 
-  if(usuarios[cpf].senha !== senha){
+  if(usuarios[cpf] !== senha){
     alert("Senha incorreta!");
     return;
   }
 
-  localStorage.setItem("logado", JSON.stringify({
-    cpf: cpf,
-    nome: usuarios[cpf].nome
-  }));
+  localStorage.setItem("logado", cpf);
 
-  document.getElementById("userNome").innerText = "Olá, " + usuarios[cpf].nome;
+  document.getElementById("userNome").innerText = "Olá, " + cpf;
 
   ir("home");
 }
