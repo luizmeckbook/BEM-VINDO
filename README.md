@@ -18,23 +18,36 @@
         .btn-support { background: var(--whatsapp); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }  
         .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }  
         
-        /* Estilos do Carrinho e Loja */
         .chat-screen { display: flex; flex-direction: column; height: 100vh; background: #e5ddd5; }  
         .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }  
         .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 14px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }  
         .msg.sent { align-self: flex-end; background: #dcf8c6; }  
         .msg.received { align-self: flex-start; background: white; }  
         .chat-footer { padding: 10px; background: #f0f0f0; display: flex; gap: 5px; }  
+        
         .cat-nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; }  
         .cat-btn { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px; white-space: nowrap; width: auto; color: #333; }  
         .cat-btn.active { background: var(--primary); color: white; }  
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }  
 
-        /* Novos Estilos Carrinho */
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #333; color: white; padding: 15px; display: none; justify-content: space-between; align-items: center; z-index: 200; border-radius: 20px 20px 0 0; cursor: pointer; }
-        .badge { background: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 12px; }
-        .remove-btn { background: #ff5252; padding: 4px; font-size: 10px; width: auto; margin-top: 5px; }
-        .pagamento-opcoes { display: none; flex-direction: column; gap: 10px; margin-top: 15px; }
+        /* BARRA DO CARRINHO - CORRIGIDA */
+        .cart-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: #333; 
+            color: white; 
+            padding: 20px; 
+            display: none; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 200; 
+            border-radius: 20px 20px 0 0; 
+            cursor: pointer;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+        }
+        .remove-btn { background: #ff5252; padding: 5px 10px; width: auto; font-size: 11px; }
     </style>
 </head>  
 <body>  
@@ -68,17 +81,19 @@
         <span id="welcome">Olá</span>  
         <button style="width:auto; background:rgba(0,0,0,0.2)" onclick="voltarParaLogin()">Sair</button>  
     </div>  
-    <div class="container" style="padding-bottom: 80px;">  
+    <div class="container" style="padding-bottom: 100px;">  
         <input type="text" id="pesquisaLoja" placeholder="Pesquisar produto..." oninput="renderizarLoja()">
         <div class="cat-nav" id="catNav"></div>  
         <div class="grid" id="listaLoja"></div>  
     </div>  
+    
     <div class="cart-bar" id="cartBar" onclick="ir('carrinho')">
-        <span>🛒 <span id="cartCount">0</span> itens</span>
-        <span id="cartTotal">R$ 0,00</span>
-        <b>VER CARRINHO</b>
+        <span>🛒 <b id="cartCount">0</b> itens</span>
+        <b id="cartTotal">R$ 0,00</b>
+        <span style="background:var(--whatsapp); padding:5px 10px; border-radius:8px">ABRIR</span>
     </div>
-    <button onclick="ir('chat')" style="position:fixed; bottom:80px; right:20px; width:60px; height:60px; border-radius:50%; background:var(--whatsapp); border:none; font-size:25px; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">💬</button>  
+
+    <button onclick="ir('chat')" style="position:fixed; bottom:90px; right:20px; width:60px; height:60px; border-radius:50%; background:var(--whatsapp); border:none; font-size:25px; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 150;">💬</button>  
 </div>  
 
 <div id="carrinho" class="tela">
@@ -177,7 +192,7 @@ function aplicarEstilos() {
 function ir(tela) {  
     document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));  
     document.getElementById(tela).classList.add('ativa');  
-    if(tela === 'home') renderizarLoja();  
+    if(tela === 'home') { renderizarLoja(); atualizarBarraCarrinho(); }
     if(tela === 'admin') renderizarAdmin();  
     if(tela === 'carrinho') renderizarCarrinho();
 }  
@@ -201,8 +216,9 @@ function registrar() {
 }  
 
 /* LOGICA DO CARRINHO */
-function addCarrinho(index) {
-    carrinho.push(produtos[index]);
+function addCarrinho(idUnico) {
+    let p = produtos.find(item => item.id === idUnico);
+    carrinho.push(p);
     atualizarBarraCarrinho();
 }
 
@@ -214,9 +230,14 @@ function removerCarrinho(index) {
 
 function atualizarBarraCarrinho() {
     let total = carrinho.reduce((a, b) => a + b.preco, 0);
-    document.getElementById("cartBar").style.display = carrinho.length > 0 ? "flex" : "none";
-    document.getElementById("cartCount").innerText = carrinho.length;
-    document.getElementById("cartTotal").innerText = "R$ " + total.toFixed(2);
+    let bar = document.getElementById("cartBar");
+    if(carrinho.length > 0) {
+        bar.style.display = "flex";
+        document.getElementById("cartCount").innerText = carrinho.length;
+        document.getElementById("cartTotal").innerText = "R$ " + total.toFixed(2);
+    } else {
+        bar.style.display = "none";
+    }
 }
 
 function renderizarCarrinho() {
@@ -227,7 +248,7 @@ function renderizarCarrinho() {
             <button class="remove-btn" onclick="removerCarrinho(${i})">Remover</button>
         </div>`;
     });
-    document.getElementById("listaItensCarrinho").innerHTML = html || "<p style='text-align:center'>Seu carrinho está vazio</p>";
+    document.getElementById("listaItensCarrinho").innerHTML = html || "<p style='text-align:center; padding:20px;'>Seu carrinho está vazio</p>";
     document.getElementById("cardPagamento").style.display = carrinho.length > 0 ? "block" : "none";
 }
 
@@ -264,14 +285,11 @@ function renderizarLoja() {
     let filtrados = categoriaAtual === "Todos" ? produtos : produtos.filter(p => p.cat === categoriaAtual);
     if(pesquisa) filtrados = filtrados.filter(p => p.nome.toLowerCase().includes(pesquisa));
 
-    document.getElementById("listaLoja").innerHTML = filtrados.map((p, i) => {
-        // Encontrar o index original para o carrinho
-        let idxOriginal = produtos.indexOf(p);
-        return `<div class="card" style="text-align:center">  
+    document.getElementById("listaLoja").innerHTML = filtrados.map((p) => `
+        <div class="card" style="text-align:center">  
             <strong>${p.nome}</strong><br><span style="color:green">R$ ${p.preco.toFixed(2)}</span>
-            <button class="btn-main" onclick="addCarrinho(${idxOriginal})" style="margin-top:10px; padding:5px; font-size:12px;">+ Adicionar</button>
-        </div>`;
-    }).join('') || "Nenhum produto.";  
+            <button class="btn-main" onclick="addCarrinho(${p.id})" style="margin-top:10px; padding:5px; font-size:12px;">+ Adicionar</button>
+        </div>`).join('') || "Nenhum produto.";  
 }  
 
 function filtrar(c) { categoriaAtual = c; renderizarLoja(); }
@@ -281,9 +299,6 @@ function renderizarAdmin() {
     document.getElementById("lista_usuarios_admin").innerHTML = Object.keys(usuarios).map(c => `  
         <div style="border-bottom:1px solid #eee; padding:5px"><b>${usuarios[c].nome}</b> | Senha: <b style="color:red">${usuarios[c].senha}</b></div>  
     `).join('');  
-    document.getElementById("lista_chats_admin").innerHTML = Object.keys(mensagens).map(c => `  
-        <button onclick="abrirChatAdmin('${c}')" style="background:#eee; color:#333; margin-bottom:5px">Responder: ${usuarios[c]?.nome || c}</button>  
-    `).join('') || "Sem mensagens.";
     
     document.getElementById("admin_lista_excluir").innerHTML = produtos.map((p, i) => `
         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px">
@@ -298,7 +313,8 @@ function addProduto() {
     let p = document.getElementById("pPreco").value;  
     let c = document.getElementById("pCat").value;  
     if(!n || !p) return;
-    produtos.push({nome: n, preco: parseFloat(p), cat: c});  
+    // Criar um ID único para evitar erros na busca
+    produtos.push({id: Date.now() + Math.random(), nome: n, preco: parseFloat(p), cat: c});  
     localStorage.setItem("m_prod", JSON.stringify(produtos));  
     renderizarAdmin();  
     alert("Produto Adicionado!");  
@@ -323,7 +339,6 @@ function salvarConfigSemRefresh() {
 function voltarParaLogin() {  
     sessaoAtiva = "";  
     carrinho = [];
-    atualizarBarraCarrinho();
     ir('login');  
 }  
 
@@ -366,5 +381,6 @@ function voltarDoChat() {
 }  
 
 window.onload = aplicarEstilos;  
-</script>  </body>  
+</script>  
+</body>  
 </html>
